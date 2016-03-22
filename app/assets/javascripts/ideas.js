@@ -35,7 +35,7 @@ var searchForIdea = function(){
 }
 
 var downIdeaQuality = function(){
-  $('#ideas').delegate('.thumbsDown', 'click', function(){
+  $('#ideas').on('click', '.thumbsDown', function(){
     var idea = this.closest('.idea')
     var quality = $(idea).find('.quality')
 
@@ -56,10 +56,9 @@ var downIdeaQuality = function(){
 }
 
 var upIdeaQuality = function(){
-  $('#ideas').delegate('.thumbsUp', 'click', function(){
+  $('#ideas').on('click', '.thumbsUp', function(){
     var idea = this.closest('.idea')
     var quality = $(idea).find('.quality')
-
 
     if ( quality !== 'genius') {
       var qualityIndex = ideaQualityCollection.indexOf(quality.text())
@@ -77,7 +76,7 @@ var upIdeaQuality = function(){
 }
 
 var deleteIdeas = function() {
-  $('#ideas').delegate('.delete', "click", function(){
+  $('#ideas').on('click', '.delete', function(){
     var idea = this.closest('.idea')
 
     $.ajax({
@@ -91,7 +90,7 @@ var deleteIdeas = function() {
 }
 
 var editIdea = function(){
-  $('#ideas').delegate('.edit', 'click', function(){
+  $('#ideas').on('click', '.edit', function(){
 
     var idea = this.closest('.idea')
     var title = $(idea).find('.title')

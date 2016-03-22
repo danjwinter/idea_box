@@ -6,11 +6,33 @@ $(document).ready(function(){
   editIdea()
   upIdeaQuality()
   downIdeaQuality()
+  searchForIdea()
 })
 
 var ideaQualityCollection = [
   'swill', 'plausible', 'genius'
 ]
+
+var searchForIdea = function(){
+  $('#search').on('keyup', function(e){
+    e.preventDefault()
+
+    var query = $(this).val()
+
+    var ideas = $('#ideas').children()
+
+    $.each(ideas, function(index, idea){
+      var title = $(idea).find('.title').text()
+      var body = $(idea).find('.body').text()
+
+      if (title.includes(query) || body.includes(query)) {
+        $(idea).show()
+      } else {
+        $(idea).hide()
+      }
+    })
+  })
+}
 
 var downIdeaQuality = function(){
   $('#ideas').delegate('.thumbsDown', 'click', function(){
@@ -141,6 +163,7 @@ var addIdeasToDom = function(ideas){
   })
 
   $('#ideas').append(htmlIdeas)
+
 }
 
 var addSingleIdea = function(idea){

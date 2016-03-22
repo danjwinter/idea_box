@@ -2,7 +2,22 @@
 $(document).ready(function(){
   displayIdeas()
   addNewIdea()
+  deleteIdeas()
 })
+
+var deleteIdeas = function() {
+  $('#ideas').delegate('.delete', "click", function(){
+    var idea = this.closest('.idea')
+
+    $.ajax({
+      url: '/api/v1/ideas/' + $(idea).attr('data-id'),
+      type: 'DELETE',
+      success: function(){
+        $(idea).remove()
+      }
+    })
+  })
+}
 
 var addNewIdea = function() {
   $('.new-idea').on("click", "#ideaSave", function(event){
@@ -36,9 +51,10 @@ var displayIdeas = function() {
 
 var addIdeasToDom = function(ideas){
   var htmlIdeas = ideas.map(function(idea){
-    return('<div data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
+    return('<div class="idea" data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
     + '<h4>' + idea.quality + '</h4>'
-    + '<p>' + truncate(idea.body) + '</p></div>')
+    + '<p>' + truncate(idea.body) + '</p>'
+    + '<button class="delete">Delete</button></div>')
   })
 
   $('#ideas').append(htmlIdeas)
@@ -46,9 +62,10 @@ var addIdeasToDom = function(ideas){
 
 var addSingleIdea = function(idea){
 
-  var htmlIdea = ('<div data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
+  var htmlIdea = ('<div class="idea" data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
   + '<h4>' + idea.quality + '</h4>'
-  + '<p>' + truncate(idea.body) + '</p></div>')
+  + '<p>' + truncate(idea.body) + '</p>'
+  + '<button class="delete">Delete</button></div>')
   $('#ideas').prepend(htmlIdea)
   $('#newTitle').val('')
   $('#newBody').val('')

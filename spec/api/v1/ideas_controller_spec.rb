@@ -50,4 +50,18 @@ describe Api::V1::IdeasController do
       expect(Idea.count).to eq 0
     end
   end
+
+  describe "PATCH #update", type: :controller do
+    it "returns 204 response when idea is updated" do
+      idea = create(:idea)
+
+      patch :update, format: :json, id: idea.id, title: 'Sweet title', body: 'oh yeah'
+
+      idea.reload
+
+      expect(response.status).to eq 204
+      expect(idea.title).to eq 'Sweet title'
+      expect(idea.body).to eq 'oh yeah'
+    end
+  end
 end

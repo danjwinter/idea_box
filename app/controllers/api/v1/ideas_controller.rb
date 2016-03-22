@@ -18,6 +18,10 @@ class Api::V1::IdeasController < Api::ApiController
     respond_with Idea.find(params[:id]).destroy
   end
 
+  def update
+    respond_with Idea.find(params[:id]).update_attributes(idea_params)
+  end
+
   private
 
   def idea_params

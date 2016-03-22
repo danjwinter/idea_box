@@ -5,6 +5,12 @@ $(document).ready(function(){
   deleteIdeas()
 })
 
+var ideaQualityMap = {
+  "0": 'swill',
+  "1": 'plausible',
+  "2": 'genius'
+}
+
 var deleteIdeas = function() {
   $('#ideas').delegate('.delete', "click", function(){
     var idea = this.closest('.idea')
@@ -52,7 +58,7 @@ var displayIdeas = function() {
 var addIdeasToDom = function(ideas){
   var htmlIdeas = ideas.map(function(idea){
     return('<div class="idea" data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
-    + '<h4>' + idea.quality + '</h4>'
+    + '<h4>' + ideaQualityMap[idea.quality] + '</h4>'
     + '<p>' + truncate(idea.body) + '</p>'
     + '<button class="delete">Delete</button></div>')
   })
@@ -63,7 +69,7 @@ var addIdeasToDom = function(ideas){
 var addSingleIdea = function(idea){
 
   var htmlIdea = ('<div class="idea" data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
-  + '<h4>' + idea.quality + '</h4>'
+  + '<h4>' + ideaQualityMap[idea.quality] + '</h4>'
   + '<p>' + truncate(idea.body) + '</p>'
   + '<button class="delete">Delete</button></div>')
   $('#ideas').prepend(htmlIdea)

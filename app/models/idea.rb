@@ -1,11 +1,6 @@
 class Idea < ActiveRecord::Base
   default_scope { order(created_at: :desc) }
 
-  before_save :default_quality
+  validates :quality, numericality: {only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 2}
 
-  private
-
-  def default_quality
-    self.quality ||= 'swill'
-  end
 end

@@ -19,9 +19,9 @@ ActiveRecord::Schema.define(version: 20160321192509) do
   create_table "ideas", force: :cascade do |t|
     t.string   "title"
     t.string   "body"
-    t.string   "quality"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "quality",    default: "0"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
 end

@@ -3,12 +3,62 @@ $(document).ready(function(){
   displayIdeas()
   addNewIdea()
   deleteIdeas()
+  editIdea()
+  upIdeaQuality()
+  downIdeaQuality()
 })
 
 var ideaQualityMap = {
   "0": 'swill',
   "1": 'plausible',
   "2": 'genius'
+}
+
+
+var ideaQualityCollection = [
+  'swill', 'plausible', 'genius'
+]
+
+var downIdeaQuality = function(){
+  $('#ideas').delegate('.thumbsDown', 'click', function(){
+    var idea = this.closest('.idea')
+    var quality = $(idea).find('.quality')
+
+
+    if ( quality !== 'swill') {
+      var qualityIndex = ideaQualityCollection.indexOf(quality.text())
+      var updatedQualityIndex = qualityIndex - 1
+      $.ajax({
+        url: '/api/v1/ideas/' + $(idea).attr('data-id'),
+        type: 'PATCH',
+        data: {'quality': updatedQualityIndex},
+        success: function(){
+          quality.text(ideaQualityCollection[updatedQualityIndex])
+        }
+      })
+    }
+  })
+}
+
+var upIdeaQuality = function(){
+  $('#ideas').delegate('.thumbsUp', 'click', function(){
+    var idea = this.closest('.idea')
+    var quality = $(idea).find('.quality')
+
+
+    if ( quality !== 'genius') {
+      var qualityIndex = ideaQualityCollection.indexOf(quality.text())
+      var updatedQualityIndex = qualityIndex + 1
+      $.ajax({
+        url: '/api/v1/ideas/' + $(idea).attr('data-id'),
+        type: 'PATCH',
+        data: {'quality': updatedQualityIndex},
+        success: function(){
+          quality.text(ideaQualityCollection[updatedQualityIndex])
+        }
+      })
+    }
+  })
 }
 
 var deleteIdeas = function() {
@@ -22,6 +72,39 @@ var deleteIdeas = function() {
         $(idea).remove()
       }
     })
+  })
+}
+
+var editIdea = function(){
+  $('#ideas').delegate('.edit', 'click', function(){
+
+    var idea = this.closest('.idea')
+    var title = $(idea).find('.title')
+    var body = $(idea).find('.body')
+
+    title.attr('contentEditable', true)
+    body.attr('contentEditable', true)
+    $(idea).append('<button class="save">Save</button>')
+    $(idea).find('.edit').remove()
+    $(idea).delegate('.save', 'click', function(){
+
+      title = $(idea).find('.title')
+      body = $(idea).find('.body')
+      var editedIdea = { title: title.text(), body: body.text()}
+
+      $.ajax({
+        url: '/api/v1/ideas/' + $(idea).attr('data-id'),
+        type: 'PATCH',
+        data: editedIdea,
+        success: function(){
+          title.attr('contentEditable', false)
+          body.attr('contentEditable', false)
+          $(idea).find('.save').remove()
+          $(idea).append('<button class="edit">Edit</button>')
+        }
+      })
+    })
+
   })
 }
 
@@ -57,10 +140,11 @@ var displayIdeas = function() {
 
 var addIdeasToDom = function(ideas){
   var htmlIdeas = ideas.map(function(idea){
-    return('<div class="idea" data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
-    + '<h4>' + ideaQualityMap[idea.quality] + '</h4>'
-    + '<p>' + truncate(idea.body) + '</p>'
-    + '<button class="delete">Delete</button></div>')
+    return('<div class="idea" data-id=' + idea.id + '><h3 class="title">' + idea.title + '</h3>'
+    + '<h4 class="quality">' + ideaQualityCollection[idea.quality] + '</h4>'
+    + '<button class="thumbsUp">Thumbs Up</button><button class="thumbsDown">Thumbs Down</button>'
+    + '<p class="body">' + truncate(idea.body) + '</p>'
+    + '<button class="delete">Delete</button><button class="edit">Edit</button></div>')
   })
 
   $('#ideas').append(htmlIdeas)
@@ -69,16 +153,14 @@ var addIdeasToDom = function(ideas){
 var addSingleIdea = function(idea){
 
   var htmlIdea = ('<div class="idea" data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
-  + '<h4>' + ideaQualityMap[idea.quality] + '</h4>'
+  + '<h4 class="quality">' + ideaQualityCollection[idea.quality] + '</h4>'
+  + '<button class="thumbsUp">Thumbs Up</button><button class="thumbsDown">Thumbs Down</button>'
   + '<p>' + truncate(idea.body) + '</p>'
-  + '<button class="delete">Delete</button></div>')
+  + '<button class="delete">Delete</button><button class="edit">Edit</button></div>')
   $('#ideas').prepend(htmlIdea)
   $('#newTitle').val('')
   $('#newBody').val('')
 }
-
-
-
 
 var truncate = function(string){
   if (string.length > 100) {

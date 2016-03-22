@@ -8,13 +8,6 @@ $(document).ready(function(){
   downIdeaQuality()
 })
 
-var ideaQualityMap = {
-  "0": 'swill',
-  "1": 'plausible',
-  "2": 'genius'
-}
-
-
 var ideaQualityCollection = [
   'swill', 'plausible', 'genius'
 ]

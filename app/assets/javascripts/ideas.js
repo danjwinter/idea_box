@@ -1,7 +1,6 @@
 
 $(document).ready(function(){
-  inlineEditTitle()
-  inlineEditBody()
+  inLineEdit()
   addNewIdea()
   deleteIdeas()
   editIdea()
@@ -12,6 +11,27 @@ $(document).ready(function(){
             .then(addElementToPage);
 })
 
+
+var inLineEdit = function() {
+    clickableElementClasses = ['.title', '.body']
+    clickableElementClasses.forEach(function(elementClass){
+      addInLineEditingForElement(elementClass)
+    })
+   }
+
+var addInLineEditingForElement = function(elementClass){
+  $('#ideas').on('click', elementClass, function(){
+    var idea = this.closest('.idea')
+
+    var element = $(idea).find(elementClass)
+    toggleContentEditable(element)
+    $(idea).on('keydown', function(e){
+      if (e.keyCode == 13){
+        updateIdea(idea).then(toggleContentEditable(element))
+      }
+    })
+  })
+}
 
 var ideaQualityCollection = [
   'swill', 'plausible', 'genius'
@@ -137,36 +157,6 @@ $.patch = function(url, data) {
     url: url,
     type: 'PATCH',
     data: data
-  })
-}
-
-var inlineEditTitle = function() {
-  $('#ideas').on('click', '.title', function(){
-    var that = this
-    var idea = this.closest('.idea')
-    var title = $(idea).find('.title')
-
-    toggleContentEditable(title)
-    $(idea).on('keydown', function(e){
-      if (e.keyCode == 13){
-        updateIdea(idea).then(toggleContentEditable(title))
-      }
-    })
-  })
-}
-
-var inlineEditBody = function() {
-  $('#ideas').on('click', '.body', function(){
-    var that = this
-    var idea = this.closest('.idea')
-    var body = $(idea).find('.body')
-
-    toggleContentEditable(body)
-    $(idea).on('keydown', function(e){
-      if (e.keyCode == 13){
-        updateIdea(idea).then(toggleContentEditable(body))
-      }
-    })
   })
 }
 

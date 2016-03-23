@@ -22,12 +22,14 @@ var inLineEdit = function() {
 var addInLineEditingForElement = function(elementClass){
   $('#ideas').on('click', elementClass, function(){
     var idea = this.closest('.idea')
-
     var element = $(idea).find(elementClass)
-    toggleContentEditable(element)
+
+    element.attr('contentEditable', true)
+
     $(idea).on('keydown', function(e){
       if (e.keyCode == 13){
-        updateIdea(idea).then(toggleContentEditable(element))
+        e.preventDefault()
+        updateIdea(idea).then(element.attr('contentEditable', false))
       }
     })
   })
@@ -132,22 +134,6 @@ var editIdea = function(){
   })
 }
 
-var toggleContentEditable = function() {
-  $.each(arguments, function(index, element){
-    if (element.attr('contentEditable')){
-      element.attr('contentEditable', false)
-    } else {
-      element.attr('contentEditable', true)
-    }
-  })
-}
-
-
-var toggleHideAndEditButtons = function(idea) {
-  $(idea).find('.edit').toggle()
-  $(idea).find('.save').toggle()
-}
-
 $.patch = function(url, data) {
   if ($.isFunction(data) || data === undefined) {
     data = {}
@@ -189,11 +175,11 @@ var getIdeas = function () {
 }
 
 var renderIdea = function (idea) {
-  return $('<div class="idea" data-id=' + idea.id + '><h3 class="title">' + idea.title + '</h3>'
+  return $('<div class="idea" data-id=' + idea.id + '><h3 class="title" contentEditable="false">' + idea.title + '</h3>'
   + '<h4 class="quality">' + ideaQualityCollection[idea.quality] + '</h4>'
   + '<button class="thumbsUp">Thumbs Up</button><button class="thumbsDown">Thumbs Down</button>'
-  + '<p class="body">' + truncate(idea.body) + '</p>'
-  + '<button class="delete">Delete</button><button class="edit">Edit</button><button style="display: none" class="save">Save</button></div>')
+  + '<p class="body" contentEditable="false">' + truncate(idea.body) + '</p>'
+  + '<button class="delete">Delete</button></div>')
 }
 
 var renderIdeas = function (ideas) {

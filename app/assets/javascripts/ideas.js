@@ -1,5 +1,7 @@
 
 $(document).ready(function(){
+  inlineEditTitle()
+  inlineEditBody()
   addNewIdea()
   deleteIdeas()
   editIdea()
@@ -135,6 +137,36 @@ $.patch = function(url, data) {
     url: url,
     type: 'PATCH',
     data: data
+  })
+}
+
+var inlineEditTitle = function() {
+  $('#ideas').on('click', '.title', function(){
+    var that = this
+    var idea = this.closest('.idea')
+    var title = $(idea).find('.title')
+
+    toggleContentEditable(title)
+    $(idea).on('keydown', function(e){
+      if (e.keyCode == 13){
+        updateIdea(idea).then(toggleContentEditable(title))
+      }
+    })
+  })
+}
+
+var inlineEditBody = function() {
+  $('#ideas').on('click', '.body', function(){
+    var that = this
+    var idea = this.closest('.idea')
+    var body = $(idea).find('.body')
+
+    toggleContentEditable(body)
+    $(idea).on('keydown', function(e){
+      if (e.keyCode == 13){
+        updateIdea(idea).then(toggleContentEditable(body))
+      }
+    })
   })
 }
 

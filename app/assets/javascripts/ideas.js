@@ -1,13 +1,15 @@
 
 $(document).ready(function(){
-  displayIdeas()
   addNewIdea()
   deleteIdeas()
   editIdea()
   upIdeaQuality()
   downIdeaQuality()
   searchForIdea()
+  getIdeas().then(renderIdeas)
+            .then(addElementToPage);
 })
+
 
 var ideaQualityCollection = [
   'swill', 'plausible', 'genius'
@@ -19,7 +21,7 @@ var searchForIdea = function(){
 
     var query = $(this).val()
 
-    var ideas = $('#ideas').children()
+    var ideas = $('.idea');
 
     $.each(ideas, function(index, idea){
       var title = $(idea).find('.title').text()
@@ -39,18 +41,11 @@ var downIdeaQuality = function(){
     var idea = this.closest('.idea')
     var quality = $(idea).find('.quality')
 
-
     if ( quality !== 'swill') {
       var qualityIndex = ideaQualityCollection.indexOf(quality.text())
       var updatedQualityIndex = qualityIndex - 1
-      $.ajax({
-        url: '/api/v1/ideas/' + $(idea).attr('data-id'),
-        type: 'PATCH',
-        data: {'quality': updatedQualityIndex},
-        success: function(){
-          quality.text(ideaQualityCollection[updatedQualityIndex])
-        }
-      })
+      var data = {'quality': updatedQualityIndex}
+      updateIdeaInDatabase(idea, data).then(quality.text(ideaQualityCollection[updatedQualityIndex]))
     }
   })
 }
@@ -60,119 +55,134 @@ var upIdeaQuality = function(){
     var idea = this.closest('.idea')
     var quality = $(idea).find('.quality')
 
-    if ( quality !== 'genius') {
+    if ( quality.text() !== 'genius') {
       var qualityIndex = ideaQualityCollection.indexOf(quality.text())
       var updatedQualityIndex = qualityIndex + 1
-      $.ajax({
-        url: '/api/v1/ideas/' + $(idea).attr('data-id'),
-        type: 'PATCH',
-        data: {'quality': updatedQualityIndex},
-        success: function(){
-          quality.text(ideaQualityCollection[updatedQualityIndex])
-        }
-      })
+      var data = {'quality': updatedQualityIndex}
+
+      updateIdeaInDatabase(idea, data).then(quality.text(ideaQualityCollection[updatedQualityIndex]))
     }
   })
+}
+
+var updateIdeaInDatabase = function(idea, data) {
+  var id = $(idea).attr('data-id')
+  return $.patch('/api/v1/ideas/' + id, data)
 }
 
 var deleteIdeas = function() {
   $('#ideas').on('click', '.delete', function(){
     var idea = this.closest('.idea')
+    deleteIdeaInDatabase(idea).then($(idea).remove())
+  })
+}
 
-    $.ajax({
-      url: '/api/v1/ideas/' + $(idea).attr('data-id'),
-      type: 'DELETE',
-      success: function(){
-        $(idea).remove()
-      }
-    })
+var deleteIdeaInDatabase = function(idea) {
+  var id = $(idea).attr('data-id')
+  return $.delete('/api/v1/ideas/' + id)
+}
+
+$.delete = function(url, data) {
+  if ($.isFunction(data) || data === undefined) {
+    data = {}
+  }
+
+  return $.ajax({
+    url: url,
+    type: 'DELETE',
+    data: data
   })
 }
 
 var editIdea = function(){
   $('#ideas').on('click', '.edit', function(){
-
     var idea = this.closest('.idea')
     var title = $(idea).find('.title')
     var body = $(idea).find('.body')
 
-    title.attr('contentEditable', true)
-    body.attr('contentEditable', true)
-    $(idea).append('<button class="save">Save</button>')
-    $(idea).find('.edit').remove()
-    $(idea).delegate('.save', 'click', function(){
+    toggleContentEditable(title, body)
+    toggleHideAndEditButtons(idea)
+    $(idea).on('click', '.save', function(){
 
-      title = $(idea).find('.title')
-      body = $(idea).find('.body')
-      var editedIdea = { title: title.text(), body: body.text()}
-
-      $.ajax({
-        url: '/api/v1/ideas/' + $(idea).attr('data-id'),
-        type: 'PATCH',
-        data: editedIdea,
-        success: function(){
-          title.attr('contentEditable', false)
-          body.attr('contentEditable', false)
-          $(idea).find('.save').remove()
-          $(idea).append('<button class="edit">Edit</button>')
-        }
-      })
+    updateIdea(idea).then(toggleContentEditable(title, body))
+                    .then(toggleHideAndEditButtons(idea))
     })
-
   })
+}
+
+var toggleContentEditable = function() {
+  $.each(arguments, function(index, element){
+    if (element.attr('contentEditable')){
+      element.attr('contentEditable', false)
+    } else {
+      element.attr('contentEditable', true)
+    }
+  })
+}
+
+
+var toggleHideAndEditButtons = function(idea) {
+  $(idea).find('.edit').toggle()
+  $(idea).find('.save').toggle()
+}
+
+$.patch = function(url, data) {
+  if ($.isFunction(data) || data === undefined) {
+    data = {}
+  }
+
+  return $.ajax({
+    url: url,
+    type: 'PATCH',
+    data: data
+  })
+}
+
+var updateIdea = function(idea) {
+  var id = $(idea).attr('data-id')
+  title = $(idea).find('.title')
+  body = $(idea).find('.body')
+  var editedIdea = { title: title.text(), body: body.text()}
+
+  return $.patch('/api/v1/ideas/' + id, editedIdea)
 }
 
 var addNewIdea = function() {
   $('.new-idea').on("click", "#ideaSave", function(event){
     event.preventDefault()
     var idea = { title: $('#newTitle').val(), body: $('#newBody').val()}
-
-    $.ajax({
-      url: '/api/v1/ideas',
-      type: 'POST',
-      data: idea,
-      success: function(response){
-        addSingleIdea(response)},
-        error: function(xhr){
-          console.log('FAIL', xhr)
-        }
-    })
+    sendNewIdeaToDatabase(idea).then(renderIdea)
+                               .then(addElementToPage)
+                               .then(clearNewFields)
   })
 }
 
-var displayIdeas = function() {
-  $.ajax({
-    url: '/api/v1/ideas',
-    type: 'GET',
-    success: function(response){
-      addIdeasToDom(response)},
-    error: function(xhr){
-      console.log('FAIL', xhr)
-    }
-  })
+var sendNewIdeaToDatabase = function(idea) {
+  return $.post('/api/v1/ideas', idea)
 }
 
-var addIdeasToDom = function(ideas){
-  var htmlIdeas = ideas.map(function(idea){
-    return('<div class="idea" data-id=' + idea.id + '><h3 class="title">' + idea.title + '</h3>'
-    + '<h4 class="quality">' + ideaQualityCollection[idea.quality] + '</h4>'
-    + '<button class="thumbsUp">Thumbs Up</button><button class="thumbsDown">Thumbs Down</button>'
-    + '<p class="body">' + truncate(idea.body) + '</p>'
-    + '<button class="delete">Delete</button><button class="edit">Edit</button></div>')
-  })
 
-  $('#ideas').append(htmlIdeas)
-
+var getIdeas = function () {
+  return $.get('/api/v1/ideas');
 }
 
-var addSingleIdea = function(idea){
-
-  var htmlIdea = ('<div class="idea" data-id=' + idea.id + '><h3>' + idea.title + '</h3>'
+var renderIdea = function (idea) {
+  return $('<div class="idea" data-id=' + idea.id + '><h3 class="title">' + idea.title + '</h3>'
   + '<h4 class="quality">' + ideaQualityCollection[idea.quality] + '</h4>'
   + '<button class="thumbsUp">Thumbs Up</button><button class="thumbsDown">Thumbs Down</button>'
-  + '<p>' + truncate(idea.body) + '</p>'
-  + '<button class="delete">Delete</button><button class="edit">Edit</button></div>')
-  $('#ideas').prepend(htmlIdea)
+  + '<p class="body">' + truncate(idea.body) + '</p>'
+  + '<button class="delete">Delete</button><button class="edit">Edit</button><button style="display: none" class="save">Save</button></div>')
+}
+
+var renderIdeas = function (ideas) {
+  return ideas.map(renderIdea);
+}
+
+var addElementToPage = function (element) {
+  $('#ideas').prepend(element);
+}
+
+var clearNewFields = function(){
   $('#newTitle').val('')
   $('#newBody').val('')
 }

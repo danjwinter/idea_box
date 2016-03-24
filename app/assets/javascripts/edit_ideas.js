@@ -14,8 +14,9 @@ var allowTitleEdits = function(that, requestService) {
   var element = $(idea).find('.title')
 
   element.attr('contentEditable', true).focus()
-
+  debugger
   element.on('blur', function(e){
+    debugger
     updateTitle(idea, element, e, requestService)
   })
 

@@ -13,7 +13,11 @@ var allowTitleEdits = function(that, requestService) {
   var idea = that.closest('.idea')
   var element = $(idea).find('.title')
 
-  element.attr('contentEditable', true)
+  element.attr('contentEditable', true).focus()
+
+  element.on('blur', function(e){
+    updateTitle(idea, element, e, requestService)
+  })
 
   $(idea).on('keydown', function(e){
     updateTitle(idea, element, e, requestService)

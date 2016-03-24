@@ -16,7 +16,6 @@ RSpec.describe do
 
       within('.edit-instructions') do
         expect(page).to have_content 'Click on a title or body to edit'
-        expect(page).to have_content 'Press Enter to save your changes'
       end
 
       within('.new-idea') do

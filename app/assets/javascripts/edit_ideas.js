@@ -14,24 +14,19 @@ var allowTitleEdits = function(that, requestService) {
   var element = $(idea).find('.title')
 
   element.attr('contentEditable', true).focus()
-  debugger
-  element.on('blur', function(e){
-    debugger
-    updateTitle(idea, element, e, requestService)
-  })
 
-  $(idea).on('keydown', function(e){
+  $(idea).on('keydown blur', function(e){
     updateTitle(idea, element, e, requestService)
   })
 }
 
 var updateTitle = function(idea, element, e, requestService) {
-  if (e.keyCode === 13){
-    e.preventDefault()
     updateIdeaTitleOrBody(idea, requestService).then( function() {
+      if (e.keyCode === 13 || e.type === 'blur'){
+      e.preventDefault()
       element.attr('contentEditable', false)
-    })
-  }
+      }
+  })
 }
 
 var inLineEditBody = function(requestService) {
@@ -47,14 +42,21 @@ var allowBodyEdits = function(that, requestService) {
   var body = $(idea).find('.body')
   body.hide()
   fullBody.show().focus()
+  listenForEnterOrBlur(idea, body, fullBody, requestService)
+}
 
-  $(idea).on('keydown', function(e){
+var listenForEnterOrBlur = function(idea, body, fullBody, requestService) {
+  fullBody.on('blur', function(e){
+    sendOnEnter(idea, e, body, fullBody, requestService)
+  })
+
+  $(idea).on('keydown blur', function(e){
     sendOnEnter(idea, e, body, fullBody, requestService)
   })
 }
 
 var sendOnEnter = function (idea, e, body, fullBody, requestService) {
-  if (e.keyCode == 13){
+  if (e.keyCode == 13 || e.type === 'blur'){
     e.preventDefault()
     updateIdeaTitleOrBody(idea, requestService).then( function() {
       showTruncatedBody(body, fullBody)

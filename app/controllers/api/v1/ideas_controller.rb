@@ -6,12 +6,17 @@ class Api::V1::IdeasController < Api::ApiController
   end
 
   def show
-    respond_with Idea.find(params[:id])
+    idea = Idea.find_by(id: params[:id])
+    if idea
+      respond_with idea
+    else
+      render :json => {:error => "Idea not found"}.to_json, :status => 404
+    end
   end
 
   def create
-    @idea = Idea.create(idea_params)
-    respond_with :api, :v1, @idea
+    idea = Idea.create(idea_params)
+    respond_with :api, :v1, idea
   end
 
   def destroy

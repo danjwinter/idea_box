@@ -23,6 +23,14 @@ describe Api::V1::IdeasController do
       expect(json_response[:body]).to eq idea.body
       expect(json_response[:quality]).to eq idea.quality
     end
+
+    it "returns a 500 status if there is no idea with that ID" do
+      get :show, id: 1, format: :json
+
+      expect(response.status).to eq 404
+      expect(json_response).to have_key :error
+      expect(json_response[:error]).to eq "Idea not found"
+    end
   end
 
   describe "POST #create", type: :controller do

@@ -23,7 +23,7 @@ var truncate = function(string){
   var shortendString = $.trim(string).substring(0, 99)
   var idx = string.lastIndexOf(' ')
 
-  if (idx == -1 || string[100] === undefined) {
+  if (idx == -1 || string.length < 100) {
     return shortendString
   } else {
     return shortendString.substring(0, idx)

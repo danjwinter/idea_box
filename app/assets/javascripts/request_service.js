@@ -1,15 +1,14 @@
-var RequestService = function() {
-};
+var requestService = {};
 
-RequestService.prototype.get = function(url) {
+requestService.get = function(url) {
   return $.get(url)
 }
 
-RequestService.prototype.post = function(url, data) {
+requestService.post = function(url, data) {
   return $.post(url, data)
 }
 
-RequestService.prototype.patch = function(url, data) {
+requestService.patch = function(url, data) {
   if ($.isFunction(data) || data === undefined) {
     data = {}
   }
@@ -21,7 +20,7 @@ RequestService.prototype.patch = function(url, data) {
   })
 }
 
-RequestService.prototype.delete = function(url, data) {
+requestService.delete = function(url, data) {
   if ($.isFunction(data) || data === undefined) {
     data = {}
   }

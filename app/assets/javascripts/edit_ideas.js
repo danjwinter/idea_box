@@ -21,7 +21,7 @@ var allowTitleEdits = function(that, requestService) {
 }
 
 var updateTitle = function(idea, element, e, requestService) {
-  if (e.keyCode == 13){
+  if (e.keyCode === 13){
     e.preventDefault()
     updateIdeaTitleOrBody(idea, requestService).then( function() {
       element.attr('contentEditable', false)
@@ -41,8 +41,7 @@ var allowBodyEdits = function(that, requestService) {
   var fullBody = $(idea).find('.full-body')
   var body = $(idea).find('.body')
   body.hide()
-  fullBody.show()
-  fullBody.focus()
+  fullBody.show().focus()
 
   $(idea).on('keydown', function(e){
     sendOnEnter(idea, e, body, fullBody, requestService)
@@ -79,7 +78,7 @@ var lowerIdeaQuality = function(that, requestService) {
   if ( quality !== 'swill') {
     var qualityIndex = ideaQualityCollection.indexOf(quality.text())
     var updatedQualityIndex = qualityIndex - 1
-    var data = {'quality': updatedQualityIndex}
+    var data = {quality: updatedQualityIndex}
 
     updateIdeaInDatabase(idea, data, requestService).then(function(){
       quality.text(ideaQualityCollection[updatedQualityIndex])
@@ -102,7 +101,7 @@ var increaseIdeaQuality = function(that, requestService) {
   if ( quality.text() !== 'genius') {
     var qualityIndex = ideaQualityCollection.indexOf(quality.text())
     var updatedQualityIndex = qualityIndex + 1
-    var data = {'quality': updatedQualityIndex}
+    var data = {quality: updatedQualityIndex}
 
     updateIdeaInDatabase(idea, data, requestService).then(function() {
       quality.text(ideaQualityCollection[updatedQualityIndex])
@@ -111,7 +110,7 @@ var increaseIdeaQuality = function(that, requestService) {
 }
 
 var updateIdeaTitleOrBody = function(idea, requestService) {
-  var id = $(idea).attr('data-id')
+  var id = $(idea).data('id')
   var title = $(idea).find('.title')
   var body = $(idea).find('.full-body')
   var editedIdea = { title: title.text(), body: body.text()}
@@ -122,6 +121,6 @@ var updateIdeaTitleOrBody = function(idea, requestService) {
 
 
 var updateIdeaInDatabase = function(idea, data, requestService) {
-  var id = $(idea).attr('data-id')
+  var id = $(idea).data('id')
   return requestService.patch('/api/v1/ideas/' + id, data)
 }

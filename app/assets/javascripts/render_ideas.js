@@ -26,6 +26,6 @@ var truncate = function(string){
   if (idx == -1 || string[100] === undefined) {
     return shortendString
   } else {
-  return shortendString.substring(0, idx)
+    return shortendString.substring(0, idx)
   }
 }

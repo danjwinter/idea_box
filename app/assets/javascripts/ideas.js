@@ -1,6 +1,4 @@
-
 $(document).ready(function(){
-  var requestService = new RequestService()
   inLineEditBody(requestService)
   inLineEditTitle(requestService)
   addNewIdea(requestService)

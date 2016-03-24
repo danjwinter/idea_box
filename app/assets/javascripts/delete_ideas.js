@@ -1,13 +1,13 @@
-var deleteIdeas = function(requestService) {
+var deleteIdeas = function() {
   $('#ideas').on('click', '.delete', function(){
     var idea = this.closest('.idea')
-    deleteIdeaInDatabase(idea, requestService).then(function(){
+    deleteIdeaInDatabase(idea).then(function(){
       $(idea).remove()
     })
   })
 }
 
-var deleteIdeaInDatabase = function(idea, requestService) {
+var deleteIdeaInDatabase = function(idea) {
   var id = $(idea).data('id')
   return requestService.delete('/api/v1/ideas/' + id)
 }

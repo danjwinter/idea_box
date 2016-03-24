@@ -1,11 +1,11 @@
 $(document).ready(function(){
-  inLineEditBody(requestService)
-  inLineEditTitle(requestService)
-  addNewIdea(requestService)
-  deleteIdeas(requestService)
-  upIdeaQualityListener(requestService)
-  downIdeaQualityListener(requestService)
+  inLineEditBody()
+  inLineEditTitle()
+  addNewIdea()
+  deleteIdeas()
+  upIdeaQualityListener()
+  downIdeaQualityListener()
   searchForIdea()
-  getIdeas(requestService).then(renderIdeas)
+  getIdeas().then(renderIdeas)
             .then(addElementToPage);
 })

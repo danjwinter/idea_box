@@ -1,4 +1,4 @@
-var getIdeas = function (requestService) {
+var getIdeas = function () {
   return requestService.get('/api/v1/ideas');
 }
 

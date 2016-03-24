@@ -1,23 +1,23 @@
-var addNewIdea = function(requestService) {
+var addNewIdea = function() {
   $('.new-idea').on("click", "#ideaSave", function(e){
     e.preventDefault()
-    saveIdea(requestService)
+    saveIdea()
   })
 }
 
-var saveIdea = function(requestService) {
+var saveIdea = function() {
   var newTitle = $('#newTitle').val()
   var newBody = $('#newBody').val()
   if (newTitle === '' || newBody === ''){
     flashEmptyIdeaMessage()
   } else {
-    acceptNewIdea(newBody, newTitle, requestService)
+    acceptNewIdea(newBody, newTitle)
   }
 }
 
-var acceptNewIdea = function(newBody, newTitle, requestService){
+var acceptNewIdea = function(newBody, newTitle){
   var idea = { title: newTitle, body: newBody}
-  sendNewIdeaToDatabase(idea, requestService).then(renderIdea)
+  sendNewIdeaToDatabase(idea).then(renderIdea)
   .then(addElementToPage)
   .then(clearNewFields)
 }
@@ -30,7 +30,7 @@ var flashEmptyIdeaMessage = function(){
   })
 }
 
-var sendNewIdeaToDatabase = function(idea, requestService) {
+var sendNewIdeaToDatabase = function(idea) {
   return requestService.post('/api/v1/ideas', idea)
 }
 

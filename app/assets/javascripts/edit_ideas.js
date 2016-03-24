@@ -2,26 +2,26 @@ var ideaQualityCollection = [
   'swill', 'plausible', 'genius'
 ]
 
-var inLineEditTitle = function(requestService){
+var inLineEditTitle = function(){
   $('#ideas').on('click', '.title', function(){
     var that = this
-    allowTitleEdits(that, requestService)
+    allowTitleEdits(that)
   })
 }
 
-var allowTitleEdits = function(that, requestService) {
+var allowTitleEdits = function(that) {
   var idea = that.closest('.idea')
   var element = $(idea).find('.title')
 
   element.attr('contentEditable', true).focus()
 
   $(idea).on('keydown blur', function(e){
-    updateTitle(idea, element, e, requestService)
+    updateTitle(idea, element, e)
   })
 }
 
-var updateTitle = function(idea, element, e, requestService) {
-    updateIdeaTitleOrBody(idea, requestService).then( function() {
+var updateTitle = function(idea, element, e) {
+    updateIdeaTitleOrBody(idea).then( function() {
       if (e.keyCode === 13 || e.type === 'blur'){
       e.preventDefault()
       element.attr('contentEditable', false)
@@ -29,36 +29,36 @@ var updateTitle = function(idea, element, e, requestService) {
   })
 }
 
-var inLineEditBody = function(requestService) {
+var inLineEditBody = function() {
   $('#ideas').on('click', '.body', function(){
     var that = this
-    allowBodyEdits(that, requestService)
+    allowBodyEdits(that)
   })
 }
 
-var allowBodyEdits = function(that, requestService) {
+var allowBodyEdits = function(that) {
   var idea = that.closest('.idea')
   var fullBody = $(idea).find('.full-body')
   var body = $(idea).find('.body')
   body.hide()
   fullBody.show().focus()
-  listenForEnterOrBlur(idea, body, fullBody, requestService)
+  listenForEnterOrBlur(idea, body, fullBody)
 }
 
-var listenForEnterOrBlur = function(idea, body, fullBody, requestService) {
+var listenForEnterOrBlur = function(idea, body, fullBody) {
   fullBody.on('blur', function(e){
-    sendOnEnter(idea, e, body, fullBody, requestService)
+    sendOnEnter(idea, e, body, fullBody)
   })
 
   $(idea).on('keydown blur', function(e){
-    sendOnEnter(idea, e, body, fullBody, requestService)
+    sendOnEnter(idea, e, body, fullBody)
   })
 }
 
-var sendOnEnter = function (idea, e, body, fullBody, requestService) {
+var sendOnEnter = function (idea, e, body, fullBody) {
   if (e.keyCode == 13 || e.type === 'blur'){
     e.preventDefault()
-    updateIdeaTitleOrBody(idea, requestService).then( function() {
+    updateIdeaTitleOrBody(idea).then( function() {
       showTruncatedBody(body, fullBody)
     });
   }
@@ -71,14 +71,14 @@ var showTruncatedBody = function(body, fullBody){
   body.show()
 }
 
-var downIdeaQualityListener = function(requestService){
+var downIdeaQualityListener = function(){
   $('#ideas').on('click', '.thumbsDown', function(){
     var that = this
-    lowerIdeaQuality(that, requestService)
+    lowerIdeaQuality(that)
   })
 }
 
-var lowerIdeaQuality = function(that, requestService) {
+var lowerIdeaQuality = function(that) {
   var idea = that.closest('.idea')
   var quality = $(idea).find('.quality')
 
@@ -87,21 +87,21 @@ var lowerIdeaQuality = function(that, requestService) {
     var updatedQualityIndex = qualityIndex - 1
     var data = {quality: updatedQualityIndex}
 
-    updateIdeaInDatabase(idea, data, requestService).then(function(){
+    updateIdeaInDatabase(idea, data).then(function(){
       quality.text(ideaQualityCollection[updatedQualityIndex])
     })
   }
 }
 
 
-var upIdeaQualityListener = function(requestService){
+var upIdeaQualityListener = function(){
   $('#ideas').on('click', '.thumbsUp', function(){
     var that = this
-    increaseIdeaQuality(that, requestService)
+    increaseIdeaQuality(that)
   })
 }
 
-var increaseIdeaQuality = function(that, requestService) {
+var increaseIdeaQuality = function(that) {
   var idea = that.closest('.idea')
   var quality = $(idea).find('.quality')
 
@@ -110,24 +110,24 @@ var increaseIdeaQuality = function(that, requestService) {
     var updatedQualityIndex = qualityIndex + 1
     var data = {quality: updatedQualityIndex}
 
-    updateIdeaInDatabase(idea, data, requestService).then(function() {
+    updateIdeaInDatabase(idea, data).then(function() {
       quality.text(ideaQualityCollection[updatedQualityIndex])
     })
   }
 }
 
-var updateIdeaTitleOrBody = function(idea, requestService) {
+var updateIdeaTitleOrBody = function(idea) {
   var id = $(idea).data('id')
   var title = $(idea).find('.title')
   var body = $(idea).find('.full-body')
   var editedIdea = { title: title.text(), body: body.text()}
 
-  return updateIdeaInDatabase(idea, editedIdea, requestService)
+  return updateIdeaInDatabase(idea, editedIdea)
 }
 
 
 
-var updateIdeaInDatabase = function(idea, data, requestService) {
+var updateIdeaInDatabase = function(idea, data) {
   var id = $(idea).data('id')
   return requestService.patch('/api/v1/ideas/' + id, data)
 }

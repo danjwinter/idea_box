@@ -24,7 +24,7 @@ describe Api::V1::IdeasController do
       expect(json_response[:quality]).to eq idea.quality
     end
 
-    it "returns a 500 status if there is no idea with that ID" do
+    it "returns a 404 status if there is no idea with that ID" do
       get :show, id: 1, format: :json
 
       expect(response.status).to eq 404

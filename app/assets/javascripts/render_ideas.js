@@ -3,7 +3,8 @@ var getIdeas = function (requestService) {
 }
 
 var renderIdea = function (idea) {
-  return $('<div class="idea" data-id=' + idea.id + '><h3 class="idea-title" contentEditable="false">' + idea.title + '</h3>'
+  // debugger
+  return $('<div class="idea" data-id=' + idea.id + '><h3 class="title" contentEditable="false">' + idea.title + '</h3>'
   + '<h4 class="quality">' + ideaQualityCollection[idea.quality] + '</h4>'
   + '<button class="thumbsUp">Thumbs Up</button><button class="thumbsDown">Thumbs Down</button>'
   + '<p class="body">' + truncate(idea.body) + '</p>'

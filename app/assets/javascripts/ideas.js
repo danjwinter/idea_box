@@ -5,8 +5,8 @@ $(document).ready(function(){
   inLineEditTitle(requestService)
   addNewIdea(requestService)
   deleteIdeas(requestService)
-  upIdeaQuality(requestService)
-  downIdeaQuality(requestService)
+  upIdeaQualityListener(requestService)
+  downIdeaQualityListener(requestService)
   searchForIdea()
   getIdeas(requestService).then(renderIdeas)
             .then(addElementToPage);

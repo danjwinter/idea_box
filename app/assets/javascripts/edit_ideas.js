@@ -1,3 +1,6 @@
+var ideaQualityCollection = [
+  'swill', 'plausible', 'genius'
+]
 
 var inLineEditTitle = function(requestService){
   $('#ideas').on('click', '.title', function(){
@@ -62,41 +65,49 @@ var showTruncatedBody = function(body, fullBody){
   body.show()
 }
 
-var downIdeaQuality = function(requestService){
+var downIdeaQualityListener = function(requestService){
   $('#ideas').on('click', '.thumbsDown', function(){
-    var idea = this.closest('.idea')
-    var quality = $(idea).find('.quality')
-
-    if ( quality !== 'swill') {
-      var qualityIndex = ideaQualityCollection.indexOf(quality.text())
-      var updatedQualityIndex = qualityIndex - 1
-      var data = {'quality': updatedQualityIndex}
-
-      updateIdeaInDatabase(idea, data, requestService).then(function(){
-        quality.text(ideaQualityCollection[updatedQualityIndex])
-      })
-    }
+    var that = this
+    lowerIdeaQuality(that, requestService)
   })
 }
-var ideaQualityCollection = [
-  'swill', 'plausible', 'genius'
-]
 
-var upIdeaQuality = function(requestService){
+var lowerIdeaQuality = function(that, requestService) {
+  var idea = that.closest('.idea')
+  var quality = $(idea).find('.quality')
+
+  if ( quality !== 'swill') {
+    var qualityIndex = ideaQualityCollection.indexOf(quality.text())
+    var updatedQualityIndex = qualityIndex - 1
+    var data = {'quality': updatedQualityIndex}
+
+    updateIdeaInDatabase(idea, data, requestService).then(function(){
+      quality.text(ideaQualityCollection[updatedQualityIndex])
+    })
+  }
+}
+
+
+var upIdeaQualityListener = function(requestService){
   $('#ideas').on('click', '.thumbsUp', function(){
-    var idea = this.closest('.idea')
-    var quality = $(idea).find('.quality')
-
-    if ( quality.text() !== 'genius') {
-      var qualityIndex = ideaQualityCollection.indexOf(quality.text())
-      var updatedQualityIndex = qualityIndex + 1
-      var data = {'quality': updatedQualityIndex}
-
-      updateIdeaInDatabase(idea, data, requestService).then(function() {
-        quality.text(ideaQualityCollection[updatedQualityIndex])
-      })
-    }
+    var that = this
+    increaseIdeaQuality(that, requestService)
   })
+}
+
+var increaseIdeaQuality = function(that, requestService) {
+  var idea = that.closest('.idea')
+  var quality = $(idea).find('.quality')
+
+  if ( quality.text() !== 'genius') {
+    var qualityIndex = ideaQualityCollection.indexOf(quality.text())
+    var updatedQualityIndex = qualityIndex + 1
+    var data = {'quality': updatedQualityIndex}
+
+    updateIdeaInDatabase(idea, data, requestService).then(function() {
+      quality.text(ideaQualityCollection[updatedQualityIndex])
+    })
+  }
 }
 
 var updateIdeaTitleOrBody = function(idea, requestService) {
